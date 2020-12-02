@@ -22,21 +22,28 @@
     
         <div class="row pt-2" id="inGame" style="display:none;">
             <div class="col-md-5 offset-md-3">
-                <h4 class="font-weight-bold" id="inGameTitle"></h4>
+                <h2 class="font-weight-bold" id="inGameTitle"></h2>
                 <div><button id="choice_1" class="choice mt-2">1</button></div>
                 <div><button id="choice_2" class="choice mt-2">2</button></div>
                 <div><button id="choice_3" class="choice mt-2">3</button></div>
                 <div><button id="choice_4" class="choice mt-2">4</button></div>        
-                <p class="border-top mt-3" id="feedback"></p>
+                
             </div>
         </div>
-        <div class="row pt-2" id="scoreDisplay" style="display: none;">
+        <div class="row pt-2" id="scoreReport" style="display: none;">
             <div class="col-md-5 offset-md-3">
-                <h4 class="font-weight-bold" id="score">Score</h4>
-                <p class="col" id="scoreDisplay" style="display:none;">
-                    Your final score is <span id="finalScore"></span>.
-                </p>
+                <h2 class="font-weight-bold">All Done!</h2>
+                <p class="pt-2">Your final score is <span id="finalScore"></span>.</p>
+                <div class="pt-2">
+                    <label>Enter intials: </label>
+                    <input id="initials">
+                    <button id="submitScore">Submit</button>
+                </div>
             </div>
+            
+        </div>
+        <div class="row border-top mt-3" style="display: none;">
+            <div class="col-md-5 offset-md-3" id="feedback"></div>
         </div>
     </div>
     
