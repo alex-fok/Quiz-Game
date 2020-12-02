@@ -21,28 +21,23 @@
     </div>
     <div class="container pt-5 m-auto" id="inGame" style="display:none;">
         <div class="row pt-2">
-            <div class="col-md-6 offset-md-3">
-                <h4 class="text-center font-weight-bold" id="inGameTitle"></h4>
+            <div class="col-md-5 offset-md-3">
+                <h4 class="font-weight-bold" id="inGameTitle"></h4>
                 <div id ="choices">
-                    <ul>
-                        <li id="choice-1" class="choice"></li>
-                        <li id="choice-2" class="choice"></li>
-                        <li id="choice-3" class="choice"></li>
-                        <li id="choice-4" class="choice"></li>
-                    </ul>
+                    <div><button id="choice_1" class="choice mt-2">1</button></div>
+                    <div><button id="choice_2" class="choice mt-2">2</button></div>
+                    <div><button id="choice_3" class="choice mt-2">3</button></div>
+                    <div><button id="choice_4" class="choice mt-2">4</button></div>
                 </div>
             </div>
+            <div class="row border-top">
+                <p class="col" id="feedback"></p>
+            </div>
         </div>
-
-        <div class="row" id="scoreDisplay">
-            <p class="col" id="input" style="display:none;">
-                Your final score is <span id="finalScore"></span>.
-            </p>
-        </div>
+        <p class="col" id="scoreDisplay" style="display:none;">
+            Your final score is <span id="finalScore"></span>.
+        </p>
         
-        <div class="row border-top">
-            <p class="col" id="feedback"></p>
-        </div>
 
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
