@@ -1,4 +1,4 @@
-const PAGE_CONTENT = ["title", "inGame", "scoreReport"];
+const PAGE_CONTENT = ["title", "inGame", "scoreReport", "highScores"];
 const MAX_TIME = 45;
 const PENALTY = 10;
 
@@ -59,16 +59,35 @@ let giveFeedback = (isRight) => {
     }, 1000)
 }
 
+let renewHighScore = (init) => {
+    let highScores = localStorage.getItem("highScores");
+    highScores = highScores ? highScores : "{}";
+    let json = JSON.parse(highScores);
+    if (json[init])
+        json[init] = timer > json[init] ? timer : json[init];
+    else
+        json[init] = timer; 
+
+    localStorage.setItem("highScores", JSON.stringify(json));
+}
+
+let clearScores = () => {
+    localStorage.removeItem("highScores");
+    let parent = document.getElementById("scoreList");
+    while (parent.firstChild)
+        parent.removeChild(parent.firstChild);
+}
+
 let toTitle = (renew) => {
-    showPageContent("title");
     renew();
+    showPageContent("title");
 }
 
 let toGame = (startQuestion, clrInt) => {
-    showPageContent("inGame");
     timer = MAX_TIME;
     renewTime(timer--);
     startQuestion();
+    showPageContent("inGame");
     
     return setInterval(() => {
         renewTime(timer);
@@ -100,12 +119,31 @@ let toNextQuestion = (current, timerId) => {
 }
 
 let toScoreReport = () => {
-    showPageContent("scoreReport");
     document.getElementById("finalScore").textContent = timer;
+    showPageContent("scoreReport");
 }
 
 let toHighScore = () => {
-    console.log("to High Score");
+    let parent = document.getElementById("scoreList");
+    while (parent.firstChild)
+        parent.removeChild(parent.firstChild);
+
+    let highScores = JSON.parse(localStorage.getItem("highScores"));
+    let hsKeys = Object.keys(highScores);
+
+    hsKeys.sort((k1, k2)=>{
+        return highScores[k1] > highScores[k2] ? -1 : (highScores[k1] < highScores[k2] ? 1 : 0);
+    });
+
+    let scoreList = document.getElementById("scoreList");
+    
+    hsKeys.forEach((initial) => {
+        let li = document.createElement("li");
+        li.textContent = initial + " - " + highScores[initial]
+        scoreList.appendChild(li);
+    })
+
+    showPageContent("highScores");
 }
 
 (()=>{
@@ -136,10 +174,19 @@ let toHighScore = () => {
         })
     });
 
+    document.getElementById("submitScore").addEventListener("click", () => {
+        renewHighScore(document.getElementById("initials").value, timer);
+        toHighScore();
+    });
+
     document.getElementById("backToTitle").addEventListener("click", () => {
         toTitle(() => {
             timer = 0;
             onQuestion = -1;
         })
     });
+
+    document.getElementById("clearScores").addEventListener("click", () => {
+        clearScores();
+    })
 })()
