@@ -1,5 +1,6 @@
-const PAGE_CONTENT = ["info", "inGame"];
-const MAX_TIME = 60;
+const PAGE_CONTENT = ["title", "inGame", "scoreReport"];
+const MAX_TIME = 45;
+const PENALTY = 10;
 
 const quizQuestions = {
     "0": {
@@ -30,9 +31,16 @@ const quizQuestions = {
     "length" : 5
 }
 
-let onQuestion = -1;
 let timer = 0;
-let timerId;
+
+let renewTime = (seconds) => {
+    console.log(seconds);
+    document.getElementById("timer").textContent = seconds;
+}
+
+let advanceTimer = (advancedBy) => {
+    return timer = timer > advancedBy-1 ? timer -= advancedBy : 0; 
+}
 
 let showPageContent = (name) => {
     PAGE_CONTENT.forEach((content)=> {
@@ -42,75 +50,96 @@ let showPageContent = (name) => {
     })
 }
 
-let toTitle = () => {
-    showPageContent("info");
-    onQuestion = -1;
-    timer = 0;
+let giveFeedback = (isRight) => {
+    let feedback = document.getElementById("feedback");
+    feedback.textContent = isRight ?  "Correct!" : "Wrong!";
+    feedback.parentElement.style = "display: block";
+    setTimeout(()=> {
+        feedback.parentElement.style = "display: none;";
+    }, 1000)
 }
 
-let toNextQuestion = () => {
-    if (++onQuestion >= quizQuestions.length){
+let toTitle = (renew) => {
+    showPageContent("title");
+    renew();
+}
+
+let toGame = (startQuestion, clrInt) => {
+    showPageContent("inGame");
+    timer = MAX_TIME;
+    renewTime(timer--);
+    startQuestion();
+    
+    return setInterval(() => {
+        renewTime(timer);
+        if (timer === 0) {
+            clrInt();
+            toScoreReport();
+        }
+        else {
+            advanceTimer(1);
+        }
+    }, 1000);
+}
+
+let toNextQuestion = (current, timerId) => {
+    if (current >= quizQuestions.length){
         clearInterval(timerId);
-        toHighScore();
+        renewTime(timer);
+        toScoreReport();
+        return;
     }
-    else {
-        let qa = quizQuestions[onQuestion];
-        document.getElementById("inGameTitle").textContent = qa.question;
-        qa.choices.forEach( (choice, i) => {
-            let element =  document.getElementById("choice_"+ (i+1));
-            element.value = choice;
-            element.textContent = (i+1) + ". " + choice;
-        })
-    }
+    
+    let qa = quizQuestions[current];
+    document.getElementById("inGameTitle").textContent = qa.question;
+    qa.choices.forEach( (choice, i) => {
+        let element = document.getElementById("choice_"+ (i+1));
+        element.value = choice;
+        element.textContent = (i+1) + ". " + choice;
+    })
 }
 
-let toScore = () => {
+let toScoreReport = () => {
+    showPageContent("scoreReport");
+    document.getElementById("finalScore").textContent = timer;
 }
 
 let toHighScore = () => {
     console.log("to High Score");
 }
 
-let resetTimer = () => {
-    timer = MAX_TIME;
-}
-
-let giveFeedback = (isRight) => {
-    let feedback = document.getElementById("feedback");
-    feedback.textContent = isRight ?  "Correct!" : "Wrong!";
-    feedback.style = "display: block";
-    setTimeout(()=> {
-        feedback.style = "display: none;";
-    }, 1000)
-}
-
 (()=>{
-    document.getElementById("timer").textContent = timer;
+    renewTime(0);
 
-    document.getElementById("startQuiz").addEventListener('click', ()=>{
-        showPageContent("inGame");
-        resetTimer();
-        toNextQuestion();
-        timerId = setInterval(()=>{
-            document.getElementById("timer").textContent = timer;
-            if (--timer < 0)
-                clearInterval(timerId);
-        }, 1000);
-    })
+    let onQuestion = -1;
+    let timerId;
+    
+    document.getElementById("startQuiz").addEventListener("click", ()=>{
+        timerId = toGame(() => {
+            toNextQuestion(++onQuestion, timerId);
+        }, () => {
+            clearInterval(timerId);
+        });
+    });
 
     let choices = document.getElementsByClassName("choice");
     
-    Array.prototype.forEach.call(choices, (choice)=>{
-        choice.addEventListener('click', (event)=>{
+    Array.prototype.forEach.call(choices, (choice) => {
+        choice.addEventListener("click", (event) => {
             let isCorrect = quizQuestions[onQuestion].answer === event.target.value;
             
             if (!isCorrect)
-                timer = timer > 9 ? timer -= 10 : 0;
+                advanceTimer(PENALTY);
 
             giveFeedback(isCorrect);
-            
-            if (onQuestion < quizQuestions.length)
-                toNextQuestion();
+            toNextQuestion(++onQuestion, timerId);
+        })
+    });
+
+    document.getElementById("backToTitle").addEventListener("click", () => {
+        toTitle(() => {
+            timer = 0;
+            onQuestion = -1;
         })
     });
 })()
