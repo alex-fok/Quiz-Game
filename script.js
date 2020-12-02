@@ -31,7 +31,7 @@ const quizQuestions = {
     "length" : 5
 }
 
-let renewTimerDisplay = (seconds) => {
+let refreshTimerDisplay = (seconds) => {
     document.getElementById("timer").textContent = seconds;
 }
 
@@ -70,17 +70,18 @@ let clearScoreList = () => {
 
 let toTitle = (resetVars) => {
     resetVars();
+    refreshTimerDisplay(0);
     showPageContent("title");
 }
 
 let toGame = (setTimer, getTimer, startQuestion, clrInt) => {
-    renewTimerDisplay(MAX_TIME);
+    refreshTimerDisplay(MAX_TIME);
     setTimer(MAX_TIME-1);
     startQuestion();
     showPageContent("inGame");
     
     return setInterval(() => {
-        renewTimerDisplay(getTimer());
+        refreshTimerDisplay(getTimer());
         if (getTimer() === 0) {
             clrInt();
             toScoreReport(getTimer);
@@ -94,7 +95,7 @@ let toGame = (setTimer, getTimer, startQuestion, clrInt) => {
 let toNextQuestion = (current, getTimer, timerId) => {
     if (current >= quizQuestions.length){
         clearInterval(timerId);
-        renewTimerDisplay(getTimer());
+        refreshTimerDisplay(getTimer());
         toScoreReport(getTimer);
         return;
     }
@@ -137,7 +138,7 @@ let toHighScore = () => {
 }
 
 (()=>{
-    renewTimerDisplay(0);
+    refreshTimerDisplay(0);
 
     let onQuestion = -1;
     let timer = 0;
@@ -151,7 +152,7 @@ let toHighScore = () => {
     
     document.getElementById("startQuiz").addEventListener("click", ()=>{
         timerId = toGame(setTimer, getTimer, () => {
-            toNextQuestion(++onQuestion, timerId);
+            toNextQuestion(++onQuestion, getTimer, timerId);
         }, () => {
             clearInterval(timerId);
         });
