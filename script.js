@@ -31,11 +31,11 @@ const quizQuestions = {
     "length" : 5
 }
 
-let refreshTimerDisplay = (seconds) => {
+const refreshTimerDisplay = (seconds) => {
     document.getElementById("timer").textContent = seconds;
 }
 
-let showPageContent = (name) => {
+const showPageContent = (name) => {
     PAGE_CONTENT.forEach((content)=> {
         name===content ?
         document.getElementById(content).style="display: block" :
@@ -43,8 +43,8 @@ let showPageContent = (name) => {
     })
 }
 
-let giveFeedback = (isRight) => {
-    let feedback = document.getElementById("feedback");
+const giveFeedback = (isRight) => {
+    const feedback = document.getElementById("feedback");
     feedback.textContent = isRight ?  "Correct!" : "Wrong!";
     feedback.parentElement.style = "display: block";
     setTimeout(()=> {
@@ -52,29 +52,29 @@ let giveFeedback = (isRight) => {
     }, 1000)
 }
 
-let renewHighScore = (init, timer) => {
+const renewHighScore = (init, score) => {
     let highScores = JSON.parse(localStorage.getItem("highScores"));
     highScores = highScores ? highScores : {};
     highScores[Date.now()] = {
         "init": init,
-        "score": timer
+        "score": score
     }
     localStorage.setItem("highScores", JSON.stringify(highScores));
 }
 
-let clearScoreList = () => {
-    let parent = document.getElementById("scoreList");
+const clearScoreList = () => {
+    const parent = document.getElementById("scoreList");
     while (parent.firstChild)
         parent.removeChild(parent.firstChild);
 }
 
-let toTitle = (resetVars) => {
+const toTitle = (resetVars) => {
     resetVars();
     refreshTimerDisplay(0);
     showPageContent("title");
 }
 
-let toGame = (setTimer, getTimer, startQuestion, clrInt) => {
+const toGame = (setTimer, getTimer, startQuestion, clrInt) => {
     refreshTimerDisplay(MAX_TIME);
     setTimer(MAX_TIME-1);
     startQuestion();
@@ -92,7 +92,7 @@ let toGame = (setTimer, getTimer, startQuestion, clrInt) => {
     }, 1000);
 }
 
-let toNextQuestion = (current, getTimer, timerId) => {
+const toNextQuestion = (current, getTimer, timerId) => {
     if (current >= quizQuestions.length){
         clearInterval(timerId);
         refreshTimerDisplay(getTimer());
@@ -100,36 +100,34 @@ let toNextQuestion = (current, getTimer, timerId) => {
         return;
     }
     
-    let qa = quizQuestions[current];
+    const qa = quizQuestions[current];
     document.getElementById("inGameTitle").textContent = qa.question;
     qa.choices.forEach( (choice, i) => {
-        let element = document.getElementById("choice_"+ (i+1));
+        const element = document.getElementById("choice_"+ (i+1));
         element.value = choice;
         element.textContent = (i+1) + ". " + choice;
     })
 }
 
-let toScoreReport = (getTimer) => {
+const toScoreReport = (getTimer) => {
     document.getElementById("finalScore").textContent = getTimer();
     showPageContent("scoreReport");
 }
 
-let toHighScore = () => {
+const toHighScore = () => {
     clearScoreList();
 
-    let highScores = JSON.parse(localStorage.getItem("highScores"));
-    let hsKeys = Object.keys(highScores);
-
-    hsKeys.sort((k1, k2)=>{
-        let s1 = highScores[k1].score;
-        let s2 = highScores[k2].score;
+    const highScores = JSON.parse(localStorage.getItem("highScores"));
+    const hsKeys = Object.keys(highScores).sort((k1, k2)=>{
+        const s1 = highScores[k1].score;
+        const s2 = highScores[k2].score;
         return s1 > s2 ? -1 : (s1 < s2 ? 1 : 0);
     });
 
-    let scoreList = document.getElementById("scoreList");
+    const scoreList = document.getElementById("scoreList");
     
     hsKeys.forEach((id) => {
-        let li = document.createElement("li");
+        const li = document.createElement("li");
         li.textContent = highScores[id].init + " - " + highScores[id].score;
         scoreList.appendChild(li);
     })
@@ -158,11 +156,11 @@ let toHighScore = () => {
         });
     });
 
-    let choices = document.getElementsByClassName("choice");
+    const choices = document.getElementsByClassName("choice");
     
     Array.prototype.forEach.call(choices, (choice) => {
         choice.addEventListener("click", (event) => {
-            let isCorrect = quizQuestions[onQuestion].answer === event.target.value;
+            const isCorrect = quizQuestions[onQuestion].answer === event.target.value;
             
             if (!isCorrect)
                 setTimer(timer-PENALTY);
