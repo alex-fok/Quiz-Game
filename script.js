@@ -31,15 +31,8 @@ const quizQuestions = {
     "length" : 5
 }
 
-let timer = 0;
-
-let renewTime = (seconds) => {
-    console.log(seconds);
+let renewTimerDisplay = (seconds) => {
     document.getElementById("timer").textContent = seconds;
-}
-
-let advanceTimer = (advancedBy) => {
-    return timer = timer > advancedBy-1 ? timer -= advancedBy : 0; 
 }
 
 let showPageContent = (name) => {
@@ -59,53 +52,50 @@ let giveFeedback = (isRight) => {
     }, 1000)
 }
 
-let renewHighScore = (init) => {
-    let highScores = localStorage.getItem("highScores");
-    highScores = highScores ? highScores : "{}";
-    let json = JSON.parse(highScores);
-    if (json[init])
-        json[init] = timer > json[init] ? timer : json[init];
-    else
-        json[init] = timer; 
-
-    localStorage.setItem("highScores", JSON.stringify(json));
+let renewHighScore = (init, timer) => {
+    let highScores = JSON.parse(localStorage.getItem("highScores"));
+    highScores = highScores ? highScores : {};
+    highScores[Date.now()] = {
+        "init": init,
+        "score": timer
+    }
+    localStorage.setItem("highScores", JSON.stringify(highScores));
 }
 
-let clearScores = () => {
-    localStorage.removeItem("highScores");
+let clearScoreList = () => {
     let parent = document.getElementById("scoreList");
     while (parent.firstChild)
         parent.removeChild(parent.firstChild);
 }
 
-let toTitle = (renew) => {
-    renew();
+let toTitle = (resetVars) => {
+    resetVars();
     showPageContent("title");
 }
 
-let toGame = (startQuestion, clrInt) => {
-    timer = MAX_TIME;
-    renewTime(timer--);
+let toGame = (setTimer, getTimer, startQuestion, clrInt) => {
+    renewTimerDisplay(MAX_TIME);
+    setTimer(MAX_TIME-1);
     startQuestion();
     showPageContent("inGame");
     
     return setInterval(() => {
-        renewTime(timer);
-        if (timer === 0) {
+        renewTimerDisplay(getTimer());
+        if (getTimer() === 0) {
             clrInt();
-            toScoreReport();
+            toScoreReport(getTimer);
         }
         else {
-            advanceTimer(1);
+            setTimer(getTimer()-1);
         }
     }, 1000);
 }
 
-let toNextQuestion = (current, timerId) => {
+let toNextQuestion = (current, getTimer, timerId) => {
     if (current >= quizQuestions.length){
         clearInterval(timerId);
-        renewTime(timer);
-        toScoreReport();
+        renewTimerDisplay(getTimer());
+        toScoreReport(getTimer);
         return;
     }
     
@@ -118,28 +108,28 @@ let toNextQuestion = (current, timerId) => {
     })
 }
 
-let toScoreReport = () => {
-    document.getElementById("finalScore").textContent = timer;
+let toScoreReport = (getTimer) => {
+    document.getElementById("finalScore").textContent = getTimer();
     showPageContent("scoreReport");
 }
 
 let toHighScore = () => {
-    let parent = document.getElementById("scoreList");
-    while (parent.firstChild)
-        parent.removeChild(parent.firstChild);
+    clearScoreList();
 
     let highScores = JSON.parse(localStorage.getItem("highScores"));
     let hsKeys = Object.keys(highScores);
 
     hsKeys.sort((k1, k2)=>{
-        return highScores[k1] > highScores[k2] ? -1 : (highScores[k1] < highScores[k2] ? 1 : 0);
+        let s1 = highScores[k1].score;
+        let s2 = highScores[k2].score;
+        return s1 > s2 ? -1 : (s1 < s2 ? 1 : 0);
     });
 
     let scoreList = document.getElementById("scoreList");
     
-    hsKeys.forEach((initial) => {
+    hsKeys.forEach((id) => {
         let li = document.createElement("li");
-        li.textContent = initial + " - " + highScores[initial]
+        li.textContent = highScores[id].init + " - " + highScores[id].score;
         scoreList.appendChild(li);
     })
 
@@ -147,13 +137,20 @@ let toHighScore = () => {
 }
 
 (()=>{
-    renewTime(0);
+    renewTimerDisplay(0);
 
     let onQuestion = -1;
+    let timer = 0;
     let timerId;
+
+    const setTimer = (time) =>{
+        timer = time >= 0 ? time : 0;
+    }
+
+    const getTimer = () => timer;
     
     document.getElementById("startQuiz").addEventListener("click", ()=>{
-        timerId = toGame(() => {
+        timerId = toGame(setTimer, getTimer, () => {
             toNextQuestion(++onQuestion, timerId);
         }, () => {
             clearInterval(timerId);
@@ -167,10 +164,10 @@ let toHighScore = () => {
             let isCorrect = quizQuestions[onQuestion].answer === event.target.value;
             
             if (!isCorrect)
-                advanceTimer(PENALTY);
+                setTimer(timer-PENALTY);
 
             giveFeedback(isCorrect);
-            toNextQuestion(++onQuestion, timerId);
+            toNextQuestion(++onQuestion, getTimer, timerId);
         })
     });
 
@@ -187,6 +184,9 @@ let toHighScore = () => {
     });
 
     document.getElementById("clearScores").addEventListener("click", () => {
-        clearScores();
+        if (localStorage.getItem("highScores")) {
+            localStorage.removeItem("highScores");
+            clearScoreList();
+        }
     })
 })()
