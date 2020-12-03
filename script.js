@@ -12,14 +12,6 @@ const showPageContent = (name) => {
     });
 }
 
-const hideElement = (elem) => {
-    document.getElementById(elem).style = "visibility: hidden";
-}
-
-const showElement = (elem) => {
-    document.getElementById(elem).style = "visibility: visible";
-}
-
 const giveFeedback = (isCorrect) => {
     const feedback = document.getElementById("feedback");
     feedback.textContent = isCorrect ?  "Correct!" : "Wrong!";
@@ -80,7 +72,7 @@ const toTitle = (resetVars) => {
     resetVars();
     refreshTimerDisplay(0);
     showPageContent("title");
-    showElement("header");
+    document.getElementById("header").style = "visibility: visible";
 }
 
 const toGame = (setTimer, getTimer, startQuestion, clrInt) => {
@@ -88,7 +80,6 @@ const toGame = (setTimer, getTimer, startQuestion, clrInt) => {
     setTimer(MAX_TIME-1);
     startQuestion();
     showPageContent("inGame");
-    showElement("footer");
     
     return setInterval(() => {
         refreshTimerDisplay(getTimer());
@@ -129,8 +120,8 @@ const toHighScore = () => {
     clearScores(scoreList);
     displayScoresOn(scoreList);
     showPageContent("highScores");
-    hideElement("header");
-    hideElement("footer");
+    document.getElementById("header").style = "visibility: hidden";
+    document.getElementById("footer").style = "display: none";
 }
 
 (() => {
