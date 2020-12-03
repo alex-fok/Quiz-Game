@@ -134,7 +134,6 @@ const toHighScore = () => {
 }
 
 (() => {
-
     let onQuestion = -1;
     let timer = 0;
     let timerId;
@@ -142,7 +141,6 @@ const toHighScore = () => {
     const setTimer = (time) =>{
         timer = time >= 0 ? time : 0;
     };
-
     const getTimer = () => timer;
 
     refreshTimerDisplay(0);
@@ -151,7 +149,7 @@ const toHighScore = () => {
         const modalScores = document.getElementById("modalScores");
         clearScores(modalScores);
         displayScoresOn(modalScores);
-    })
+    });
     
     document.getElementById("startQuiz").addEventListener("click", () => {
         timerId = toGame(setTimer, getTimer, () => {
@@ -165,21 +163,25 @@ const toHighScore = () => {
     
     Array.prototype.forEach.call(choices, (choice) => {
         choice.addEventListener("click", (event) => {
-            const isCorrect = quizQuestions[onQuestion].answer === event.target.value;
-            
+            const isCorrect = quizQuestions[onQuestion].answer === event.target.value; 
             if (!isCorrect) {
                 setTimer(timer-PENALTY);
                 refreshTimerDisplay(timer);
             }
-
             giveFeedback(isCorrect);
             toNextQuestion(++onQuestion, getTimer, timerId);
-        })
+        });
+    });
+
+    document.getElementById("initials").addEventListener("input", (event) => {
+        document.getElementById("submitScore").disabled = event.target.value === "" ? true: false;
     });
 
     document.getElementById("submitScore").addEventListener("click", () => {
         const initials = document.getElementById("initials");
-        if (initials.value.length > 10)
+        if (initials.value === "")
+            return;
+        else if (initials.value.length > 10)
             return alert("Please enter initials with less than 10 characters.");
         
         renewHighscore(initials.value, timer);
@@ -191,7 +193,7 @@ const toHighScore = () => {
         toTitle(() => {
             timer = 0;
             onQuestion = -1;
-        })
+        });
     });
 
     document.getElementById("clearScores").addEventListener("click", () => {
