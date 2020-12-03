@@ -14,6 +14,7 @@
         <p class="float-right">Timer: <span id="timer"></p>
     </header>
     
+    <!--Modal that displays highscores-->
     <div class="modal fade" id="scoreModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
@@ -29,8 +30,10 @@
             </div>
         </div>
     </div>
-
+    <!--Main content. Each page content is represented in row-->
     <div class="container pt-3 m-auto">
+
+        <!--Title Page-->
         <div class="row" id="title">
             <div class="col-md-6 offset-md-3">
                 <h2 class="text-center font-weight-bold">Coding Quiz Challenge</h2>
@@ -40,7 +43,8 @@
                 <button type="button" id="startQuiz">Start Quiz</button>
             </div>
         </div>
-    
+        
+        <!--In Game-->
         <div class="row pt-2" id="inGame" style="display:none;">
             <div class="col-md-5 offset-md-3">
                 <h2 class="font-weight-bold" id="question"></h2>
@@ -52,6 +56,7 @@
             </div>
         </div>
         
+        <!--Score Report-->
         <div class="row pt-2" id="scoreReport" style="display: none;">
             <div class="col-md-5 offset-md-3">
                 <h2 class="font-weight-bold">All Done!</h2>
@@ -64,6 +69,7 @@
             </div>
         </div>
 
+        <!--Highscores-->
         <div class="row pt-2" id="highScores" style="display: none;">
             <div class="col-md-5 offset-md-3">
                 <h2 class="font-weight-bold">Highscores</h2>
@@ -75,6 +81,7 @@
             </div>
         </div>
 
+        <!--Feedback. Tells user whether his/her answer is correct or wrong-->
         <div class="row mt-3">
             <div class="col-md-5 offset-md-3 border-top" id="feedback"></div>
         </div>
