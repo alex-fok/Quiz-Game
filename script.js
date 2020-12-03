@@ -1,58 +1,35 @@
-const PAGE_CONTENT = ["title", "inGame", "scoreReport", "highScores"];
-const MAX_TIME = 45;
-const PENALTY = 10;
-
-const quizQuestions = {
-    "0": {
-        question:"Commonly used data types DO NOT include: ",
-        choices:["strings","booleans","alerts","numbers"],
-        answer:"alerts"
-    },
-    "1": {
-        question:"The condition in if/else statement is enclosed within ________.",
-        choices:["quotes","curly brackets","parentheses","square brackets"],
-        answer:"parentheses"
-    },
-    "2": {
-        question:"Arrarys in Javascript can be used to store ________.",
-        choices:["numbers and strings","other arrays","booleans","all of the above"],
-        answer:"all of the above"
-    },
-    "3": {
-        question:"String value can be enclosed within ________ when being assigned to variables",
-        choices:["commas","curly brackets","quotes","parentheses"],
-        answer:"quotes"
-    },
-    "4": {
-        question:"A very useful tool used during development and debugging for printing content to debugger is: ",
-        choices:["JavaScript","terminal / bash","for loop","console log"],
-        answer:"console log"
-    },
-    "length" : 5
-}
-
 const refreshTimerDisplay = (seconds) => {
     document.getElementById("timer").textContent = seconds;
 }
 
 const showPageContent = (name) => {
-    PAGE_CONTENT.forEach((content)=> {
-        name===content ?
-        document.getElementById(content).style="display: block" :
-        document.getElementById(content).style="display: none";
-    })
+    PAGE_CONTENT.forEach((content) => {
+        const pageContent = document.getElementById(content);
+
+        name === content ?
+        pageContent.style="display: block" :
+        pageContent.style="display: none";
+    });
 }
 
-const giveFeedback = (isRight) => {
+const hideElement = (elem) => {
+    document.getElementById(elem).style = "visibility: hidden";
+}
+
+const showElement = (elem) => {
+    document.getElementById(elem).style = "visibility: visible";
+}
+
+const giveFeedback = (isCorrect) => {
     const feedback = document.getElementById("feedback");
-    feedback.textContent = isRight ?  "Correct!" : "Wrong!";
+    feedback.textContent = isCorrect ?  "Correct!" : "Wrong!";
     feedback.parentElement.style = "display: block";
-    setTimeout(()=> {
+    setTimeout(() => {
         feedback.parentElement.style = "display: none;";
     }, 1000)
 }
 
-const renewHighScore = (init, score) => {
+const renewHighscore = (init, score) => {
     let highScores = JSON.parse(localStorage.getItem("highScores"));
     highScores = highScores ? highScores : {};
     highScores[Date.now()] = {
@@ -62,16 +39,48 @@ const renewHighScore = (init, score) => {
     localStorage.setItem("highScores", JSON.stringify(highScores));
 }
 
-const clearScoreList = () => {
-    const parent = document.getElementById("scoreList");
-    while (parent.firstChild)
-        parent.removeChild(parent.firstChild);
+const clearScores = (location) => {
+    while (location.firstChild)
+        location.removeChild(location.firstChild);
+}
+
+const displayScoresOn = (location) => {
+    const locElemType = location.nodeName.toLowerCase();
+    
+    if (locElemType !== "ul" && locElemType !== "ol")
+        throw new Error("Invalid HTML Element Type. Expects <ul> or <ol>.");
+
+    let highScores = JSON.parse(localStorage.getItem("highScores"));
+    highScores = highScores ? highScores : {};
+
+    const hsKeys = Object.keys(highScores).sort((key1, key2) => {
+        const score1 = highScores[key1].score;
+        const score2 = highScores[key2].score;
+        
+        if (score1 === null || score2 === null)
+            throw new Error("Invalid entry saved in highScores.");
+
+        return score1 > score2 ? -1 : (score1 < score2 ? 1 : 0);
+    });
+
+    hsKeys.forEach((id) => {
+        const li = document.createElement("li");
+        const init = highScores[id].init;
+        const score = highScores[id].score;
+
+        if (init === null)
+            throw new Error("Invalid entry saved in highScores.");
+
+        li.textContent = init + " - " + score;
+        location.appendChild(li);
+    });
 }
 
 const toTitle = (resetVars) => {
     resetVars();
     refreshTimerDisplay(0);
     showPageContent("title");
+    showElement("header");
 }
 
 const toGame = (setTimer, getTimer, startQuestion, clrInt) => {
@@ -79,6 +88,7 @@ const toGame = (setTimer, getTimer, startQuestion, clrInt) => {
     setTimer(MAX_TIME-1);
     startQuestion();
     showPageContent("inGame");
+    showElement("footer");
     
     return setInterval(() => {
         refreshTimerDisplay(getTimer());
@@ -93,7 +103,7 @@ const toGame = (setTimer, getTimer, startQuestion, clrInt) => {
 }
 
 const toNextQuestion = (current, getTimer, timerId) => {
-    if (current >= quizQuestions.length){
+    if (current >= quizQuestions.length) {
         clearInterval(timerId);
         refreshTimerDisplay(getTimer());
         toScoreReport(getTimer);
@@ -101,12 +111,12 @@ const toNextQuestion = (current, getTimer, timerId) => {
     }
     
     const qa = quizQuestions[current];
-    document.getElementById("inGameTitle").textContent = qa.question;
-    qa.choices.forEach( (choice, i) => {
-        const element = document.getElementById("choice_"+ (i+1));
-        element.value = choice;
-        element.textContent = (i+1) + ". " + choice;
-    })
+    document.getElementById("question").textContent = qa.question;
+    qa.choices.forEach((choice, i) => {
+        const ch = document.getElementById("choice_"+ (i+1));
+        ch.value = choice;
+        ch.textContent = (i+1) + ". " + choice;
+    });
 }
 
 const toScoreReport = (getTimer) => {
@@ -115,28 +125,15 @@ const toScoreReport = (getTimer) => {
 }
 
 const toHighScore = () => {
-    clearScoreList();
-
-    const highScores = JSON.parse(localStorage.getItem("highScores"));
-    const hsKeys = Object.keys(highScores).sort((k1, k2)=>{
-        const s1 = highScores[k1].score;
-        const s2 = highScores[k2].score;
-        return s1 > s2 ? -1 : (s1 < s2 ? 1 : 0);
-    });
-
     const scoreList = document.getElementById("scoreList");
-    
-    hsKeys.forEach((id) => {
-        const li = document.createElement("li");
-        li.textContent = highScores[id].init + " - " + highScores[id].score;
-        scoreList.appendChild(li);
-    })
-
+    clearScores(scoreList);
+    displayScoresOn(scoreList);
     showPageContent("highScores");
+    hideElement("header");
+    hideElement("footer");
 }
 
-(()=>{
-    refreshTimerDisplay(0);
+(() => {
 
     let onQuestion = -1;
     let timer = 0;
@@ -144,11 +141,19 @@ const toHighScore = () => {
 
     const setTimer = (time) =>{
         timer = time >= 0 ? time : 0;
-    }
+    };
 
     const getTimer = () => timer;
+
+    refreshTimerDisplay(0);
+
+    document.getElementById("viewScores").addEventListener("click", () => {
+        const modalScores = document.getElementById("modalScores");
+        clearScores(modalScores);
+        displayScoresOn(modalScores);
+    })
     
-    document.getElementById("startQuiz").addEventListener("click", ()=>{
+    document.getElementById("startQuiz").addEventListener("click", () => {
         timerId = toGame(setTimer, getTimer, () => {
             toNextQuestion(++onQuestion, getTimer, timerId);
         }, () => {
@@ -159,7 +164,7 @@ const toHighScore = () => {
     const choices = document.getElementsByClassName("choice");
     
     Array.prototype.forEach.call(choices, (choice) => {
-        choice.addEventListener("click", (event) => {
+        choice.addEventListener("click", (event)=>{
             const isCorrect = quizQuestions[onQuestion].answer === event.target.value;
             
             if (!isCorrect)
@@ -171,7 +176,8 @@ const toHighScore = () => {
     });
 
     document.getElementById("submitScore").addEventListener("click", () => {
-        renewHighScore(document.getElementById("initials").value, timer);
+        renewHighscore(document.getElementById("initials").value, timer);
+        document.getElementById("initials").value = "";
         toHighScore();
     });
 
@@ -185,7 +191,7 @@ const toHighScore = () => {
     document.getElementById("clearScores").addEventListener("click", () => {
         if (localStorage.getItem("highScores")) {
             localStorage.removeItem("highScores");
-            clearScoreList();
+            clearScores();
         }
-    })
+    });
 })()
