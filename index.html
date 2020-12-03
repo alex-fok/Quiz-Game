@@ -15,22 +15,22 @@
     </header>
     
     <div class="modal fade" id="scoreModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">HighScores</h5>
+                    <h5 class="modal-title">Highscores</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <ul id="modalScores"></ul>
+                    <ol id="modalScores"></ol>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container pt-5 m-auto">
+    <div class="container pt-3 m-auto">
         <div class="row" id="title">
             <div class="col-md-6 offset-md-3">
                 <h2 class="text-center font-weight-bold">Coding Quiz Challenge</h2>
@@ -58,7 +58,7 @@
                 <p class="pt-2">Your final score is <span id="finalScore"></span>.</p>
                 <div class="pt-2">
                     <label>Enter intials: </label>
-                    <input id="initials">
+                    <input id="initials" maxlength="10">
                     <button type="button" id="submitScore">Submit</button>
                 </div>
             </div>
@@ -66,10 +66,12 @@
 
         <div class="row pt-2" id="highScores" style="display: none;">
             <div class="col-md-5 offset-md-3">
-                <h2 class="font-weight-bold">High Score</h2>
-                <ul id="scoreList"></ul>
-                <button type="button" id="backToTitle">Go Back</button>
-                <button type="button" id="clearScores">Clear</button>
+                <h2 class="font-weight-bold">Highscores</h2>
+                <ol id="scoreList"></ol>
+                <div class="mt-4">
+                    <button type="button" id="backToTitle">Go Back</button>
+                    <button type="button" id="clearScores">Clear Highscores</button>
+                </div>
             </div>
         </div>
 
