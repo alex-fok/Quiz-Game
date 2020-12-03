@@ -164,11 +164,13 @@ const toHighScore = () => {
     const choices = document.getElementsByClassName("choice");
     
     Array.prototype.forEach.call(choices, (choice) => {
-        choice.addEventListener("click", (event)=>{
+        choice.addEventListener("click", (event) => {
             const isCorrect = quizQuestions[onQuestion].answer === event.target.value;
             
-            if (!isCorrect)
+            if (!isCorrect) {
                 setTimer(timer-PENALTY);
+                refreshTimerDisplay(timer);
+            }
 
             giveFeedback(isCorrect);
             toNextQuestion(++onQuestion, getTimer, timerId);
@@ -176,8 +178,12 @@ const toHighScore = () => {
     });
 
     document.getElementById("submitScore").addEventListener("click", () => {
-        renewHighscore(document.getElementById("initials").value, timer);
-        document.getElementById("initials").value = "";
+        const initials = document.getElementById("initials");
+        if (initials.value.length > 10)
+            return alert("Please enter initials with less than 10 characters.");
+        
+        renewHighscore(initials.value, timer);
+        initials.value = "";
         toHighScore();
     });
 
@@ -191,7 +197,7 @@ const toHighScore = () => {
     document.getElementById("clearScores").addEventListener("click", () => {
         if (localStorage.getItem("highScores")) {
             localStorage.removeItem("highScores");
-            clearScores();
+            clearScores(document.getElementById("scoreList"));
         }
     });
 })()
