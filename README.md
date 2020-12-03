@@ -1,5 +1,5 @@
 # Quiz-Game
-Quiz game designed based on JavaScript knowledge. User will be presented with 5 questions and 75 seconds time limit. Each wrong answer will penalize user 10 seconds from timer. The final remaining time will be the score for user.
+Quiz game designed to test user's knowledge on JavaScript. User will be presented with 5 questions and 75 seconds time limit. Each wrong answer will penalize score time by 10 seconds. The final remaining time will be the score for user.
 
 ## Screenshots
 Title Page
