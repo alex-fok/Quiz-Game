@@ -6,6 +6,10 @@ button {
     padding: 5px 10px;
 }
 
+button[disabled],button:disabled {
+    background-color: #b372b3;
+}
+
 p.clickable {
     cursor: pointer;
     color: purple;
