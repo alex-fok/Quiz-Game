@@ -5,3 +5,8 @@ button {
     border: none;
     padding: 5px 10px;
 }
+
+p.clickable {
+    cursor: pointer;
+    color: purple;
+}
