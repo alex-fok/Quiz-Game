@@ -1,5 +1,5 @@
 button {
-    background-color: purple;
+    background-color: #8d3e8d; 
     color: white;
     border-radius: 5px;
     border: none;
@@ -9,4 +9,29 @@ button {
 p.clickable {
     cursor: pointer;
     color: purple;
+}
+.modal-content {
+    border: 0px;
+}
+.modal-header {
+    border: 0px;
+}
+
+.modal-body {
+    padding: 0px;
+}
+
+ol {
+    list-style-position: inside;
+    margin: 0px;
+    padding: 0px;
+}
+
+ol li {
+    padding: 8px 15px;
+}
+
+ol li:nth-child(odd) {
+    background-color:#b4a3b4;
+    color: white;
 }
